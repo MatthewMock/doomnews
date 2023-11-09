@@ -45,14 +45,32 @@ import com.example.doomnews.R
 import com.example.doomnews.data.DataSource
 import com.example.doomnews.model.NewsArticle
 import com.example.doomnews.ui.theme.DoomNewsTheme
+import androidx.activity.compose.BackHandler
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 
 @Composable
-fun DoomNewsApp() {
+fun DoomNewsApp(
+    windowSize: WindowWidthSizeClass,
+    modifier: Modifier = Modifier
+) {
     val viewModel: DoomNewsViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     // TODO: Add contentType and when conditional to determine windowSize
+    when (windowSize) {
+        WindowWidthSizeClass.Compact -> {
 
+        }
+        WindowWidthSizeClass.Medium -> {
+
+        }
+        WindowWidthSizeClass.Expanded -> {
+
+        }
+        else -> {
+
+        }
+    }
     Scaffold(
         topBar = {
             DoomNewsAppBar(
@@ -63,14 +81,26 @@ fun DoomNewsApp() {
     ) { innerPadding ->
         // TODO: Add simple navigation with if/else conditional to show details
         // TODO: Add navigation to go to Feed page and List and Details page
+        if (uiState.isShowingListPage) {
+            DoomNewsList(
+                articles = uiState.articlesList,
+                onClick = {
+                    /* TODO: Call ViewModel to updateCurrentArticle and navigateToDetailPage */
+                        viewModel.updateCurrentArticle(it)
+                        viewModel.navigateToDetailPage()
+                },
+                contentPadding = innerPadding,
+            )
+        } else {
+            DoomNewsDetail(
+                selectedArticle = uiState.currentArticle,
+                contentPadding = innerPadding,
+                onBackPressed = {
+                    viewModel.navigateToListPage()
+                }
+            )
+        }
 
-        DoomNewsList(
-            articles = uiState.articlesList,
-            onClick = {
-                      /* TODO: Call ViewModel to updateCurrentArticle and navigateToDetailPage */
-            },
-            contentPadding = innerPadding,
-        )
     }
 }
 
@@ -182,6 +212,9 @@ private fun DoomNewsDetail(
     @DimenRes imageSize: Int = R.dimen.image_size_small
 ) {
     /* TODO: Add Back Handler */
+    BackHandler {
+        onBackPressed()
+    }
 
     Column(
         modifier = modifier
